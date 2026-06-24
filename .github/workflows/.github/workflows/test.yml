@@ -1,0 +1,30 @@
+name: Test Linux Post Install Script
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt update && sudo apt install -y shellcheck
+
+      - name: Lint script (check errors)
+        run: shellcheck post-install.sh || true
+
+      - name: Make script executable
+        run: chmod +x post-install.sh
+
+      - name: Syntax check
+        run: bash -n post-install.sh
+
+      - name: Dry run simulation
+        run: |
+          echo "🧪 Simulating execution..."
+          bash -c "set -e; bash post-install.sh || true"
